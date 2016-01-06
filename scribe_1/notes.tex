@@ -75,10 +75,10 @@ Turing Machine $M$ computes $f$ in time $T(n)$ if, when started with $x \in \{0,
 
 The bars surrounding the input string denote the bit length of the string. For example, $|10101| = 5$.
 
-We now have the means with which to quantify the time-performance of the first palindrome checking TM we constructed. Namely, it has completes in time $3\cdot T(n) = O(n)$. Moreover, we can combine our newly produced definition of time efficiency with some definitions of what it means to be a language to define families of languages.
+We now have the means with which to quantify the time-performance of the first palindrome checking TM we constructed. Namely, it completes in time $3\cdot T(n) = O(n)$. Moreover, we can combine our newly produced definition of time efficiency with some definitions of what it means to be a language to define families of languages.
 
 \begin{definition}
-A language is any subset $L \subseteq \{0,1\}*$.
+A language is any subset $L \subseteq \{0,1\}^*$.
 \end{definition}
 
 That is to say, a language is any collection of binary strings.
@@ -114,15 +114,48 @@ For this final section, we demonstrate that our standard TM as defined in Sectio
 First, we show that a TM with an enriched alphabet can be perfectly simulated by a standard TM, although it will do so more slowly.
 
 \begin{definition}
-If $f_L : \{0,1\}^* \rightarrow \{0,1\}^*$ is computable in time $T(n)$ with alphabet $\Gamma$, then $f$ is computable in time $O(T(n)\cdot \log_2|\Gamma|)$.
+If $f_L : \{0,1\}^* \rightarrow \{0,1\}^*$ is computable in time $T(n)$ with alphabet $\Gamma$, then $f$ is computable in time $O(T(n)\cdot \lceil\log_2|\Gamma|\rceil)$.
 \end{definition}
 
-Essentially, we accommodate this enriched alphabet within our restricted alphabet by encoding in binary every symbol in the enriched alphabet. For example, if the tapes of the TM with an enriched alphabet are as pictured in Figure??, we can use the encoding scheme in Table?? to generate a new set of tapes using only our restricted alphabet, as pictured in Figure??.
+Essentially, we accommodate this enriched alphabet within our restricted alphabet by encoding in binary every symbol in the enriched alphabet. For example, if the tapes of the TM with an enriched alphabet are as pictured in Figure~\ref{fig:enriched}, we can use the encoding scheme in Table~\ref{table:encoding} to generate a new set of tapes using only our restricted alphabet, as pictured in Figure~\ref{fig:encoded}. In this example, $\lceil\log_2|\Gamma|\rceil = \lceil\log_2|\{\alpha,\beta,\gamma,\delta,\epsilon\}|\rceil = \lceil\log_2 5\rceil = \lceil 2.3219\dots\rceil = 3$.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=.3\textwidth]{enriched}
+\end{center}
+\caption{The tapes of the TM with an enriched alphabet.}
+\label{fig:enriched}
+\end{figure}
+
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{c | c}
+\textbf{Symbol} & \textbf{Encoding}\\\hline
+$\alpha$ & 000\\
+$\beta$ & 001\\
+$\gamma$ & 010\\
+$\delta$ & 011\\
+$\epsilon$ & 100\\
+\end{tabular}
+\end{center}
+\caption{A binary encoding of symbols from the enriched alphabet.}
+\label{table:encoding}
+\end{table}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=.6\textwidth]{encoded}
+\end{center}
+\caption{The tapes of the TM with a binary alphabet.}
+\label{fig:encoded}
+\end{figure}
 
 \begin{proof}
-Encode each symbol of $\Gamma$ by a string in $\{0,1\}$* of $\log_2|\Gamma|$ bits.
+Encode each symbol of $\Gamma$ by a string in $\{0,1\}$* of $\lceil\log_2|\Gamma|\rceil$ bits.
 
+Simulating a step of the TM with the enriched alphabet using a TM with the restricted, binary alphabet is then done as follows. For each step, read $\lceil\log_2|\Gamma|\rceil$ symbols from each tape. As you do so, memorize the symbols you have read using state. This will require $k\cdot\lceil\log_2|\Gamma|\rceil$ states, because $k$ tapes will contain symbols of essentially $\lceil\log_2|\Gamma|\rceil$ in length. Then, just as in standard TM operation, use the transition function $\delta$ to determine the new state and the new symbols to write to the tapes. This will take $O(\lceil\log_2|\Gamma|\rceil)$ steps.
 
+Alternatively, instead of lengthening the tapes by increasing the number of symbols to be stored on each tape, we could have used $k\cdot\lceil\log_2|\Gamma|\rceil$ tapes, where $k$ is the number of tapes required for the TM with the enriched alphabet. This way, we would be able to read symbols on the encoded tapes just as quickly as we had on the enriched tapes, because we would essentially be reading $\lceil\log_2|\Gamma|\rceil$ symbols per tape at a time. This alternative solution takes less time but more space when compared with our initial solution.
 
 \end{proof}
 
