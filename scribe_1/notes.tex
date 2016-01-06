@@ -33,7 +33,7 @@ As can be seen in Figure~\ref{fig:tm}, a TM consists of arbitrarily many tapes w
 
 The entities floating about the tapes in Figure~\ref{fig:tm} are \emph{tape heads}, all of which (except for the head of the input tape, which can only read) are capable of reading values from and writing values to the segment of the tape which they are pointing to at a given point in time. Additionally, all tape heads can either move to the left, move to the right, or stay put at each step in the computation performed by the TM.
 
-Lastly, a TM has a a state register which is capable of storing, at any given time, one of the finitely many states available to the TM. In Figure~\ref{fig:tm}, the state register holds the value $HALTED$, which is the state a TM enters once it has finished computation.
+Lastly, a TM has a a state register which is capable of storing, at any given time, one of the finitely many states available to the TM. In Figure~\ref{fig:tm}, the state register holds the value $HALTED$, which is the state a TM enters once it has finished computation.\\
 
 Figure~\ref{fig:tm} and the accompanying description provides a useful visual intuition for the composition and behavior of a TM. However, it often proves useful to refer to the mathematical formalism of a TM, which is as follows. Formally, a TM is a tuple $(\Gamma, Q, \delta)$, such that $\Gamma$ is the alphabet of the TM, a finite set of symbols which has at minimum the subset $\{\Box, \rhd, 0, 1\}$, where $\Box$ is used for blank segments on the TM's tapes, and the $\rhd$ denotes the leftmost segment of a tape; $Q$ is a set of states which at minimum contains the states $START$ and $HALTED$, which are used, respectively, for the initial and final states of computation; and lastly $\delta$, the \emph{transition function} for the TM, which is used to determine what state to enter, what symbols to write to the tapes, and which direction (if any) to move each head, all based on the current state and the symbols beneath the every head of the TM. The transition function $\delta$ thus takes the following form: 
 
@@ -155,7 +155,45 @@ Encode each symbol of $\Gamma$ by a string in $\{0,1\}$* of $\lceil\log_2|\Gamma
 
 Simulating a step of the TM with the enriched alphabet using a TM with the restricted, binary alphabet is then done as follows. For each step, read $\lceil\log_2|\Gamma|\rceil$ symbols from each tape. As you do so, memorize the symbols you have read using state. This will require $k\cdot\lceil\log_2|\Gamma|\rceil$ states, because $k$ tapes will contain symbols of essentially $\lceil\log_2|\Gamma|\rceil$ in length. Then, just as in standard TM operation, use the transition function $\delta$ to determine the new state and the new symbols to write to the tapes. This will take $O(\lceil\log_2|\Gamma|\rceil)$ steps.
 
-Alternatively, instead of lengthening the tapes by increasing the number of symbols to be stored on each tape, we could have used $k\cdot\lceil\log_2|\Gamma|\rceil$ tapes, where $k$ is the number of tapes required for the TM with the enriched alphabet. This way, we would be able to read symbols on the encoded tapes just as quickly as we had on the enriched tapes, because we would essentially be reading $\lceil\log_2|\Gamma|\rceil$ symbols per tape at a time. This alternative solution takes less time but more space when compared with our initial solution.
+% UNSURE OF ADDITIONAL STATES NEEDED %
+
+Alternatively, instead of lengthening the tapes by increasing the number of symbols to be stored on each tape, we could have used $k\cdot\lceil\log_2|\Gamma|\rceil$ tapes, where $k$ is the number of tapes required for the TM with the enriched alphabet. This way, we would be able to read symbols on the encoded tapes just as quickly as we had on the enriched tapes, because we would essentially be reading $\lceil\log_2|\Gamma|\rceil$ symbols per tape at a time. This alternative solution takes less time but more space when compared with our initial solution.\\
+
+\end{proof}
+
+Lastly, we show that our standard TM can be used to simulate a TM having bidirectional tapes. Whereas our standard TM has tapes which extend infinitely in only one direction, bidirectional tapes extend infinitely in both directions, as shown in Figure~\ref{fig:bidirectional}.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=.6\textwidth]{bidirectional}
+\end{center}
+\caption{A bidirectional tape.}
+\label{fig:bidirectional}
+\end{figure}
+
+\begin{definition}
+If $f : \{0,1\}^* \rightarrow \{0,1\}^*$ is computable in time $T(n)$ using bidirectional tapes, then $f$ is computable in time $O(T(n))$ using standard tapes.
+\end{definition}
+
+We accomplish this by ``cutting" the bidirectional tape in half, and then folding it over into a tape that is twice as ``thick", as shown in Figure~\ref{fig:cut}. This new, thicker tape can now be treated as the tape of a standard TM, with some added nuances.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=.7\textwidth]{cut}
+\end{center}
+\caption{Cutting a bidirectional tape into two pieces, and then folding it over.}
+\label{fig:cut}
+\end{figure}
+
+\begin{proof}
+After having cut the bidirectional tapes of the original TM as shown in Figure~\ref{fig:cut}, we create a new TM with alphabet $\Gamma'=\Gamma\times\Gamma$ and states $Q'=Q\times\{TOP, BOTTOM\}$.
+
+We can then treat our new TM identically to how we would have treated our original TM so long as
+
+\begin{enumerate}
+\item State is used to remember which region of the tape the head is currently pointing to, either $TOP$ or $BOTTOM$.
+\item Whenever $\delta$ instructs us to move the tape head to the left while it is in the left-most position of the tape, the positional component of the TM's state is flipped, either from $TOP$ to $BOTTOM$ or from $BOTTOM$ to $TOP$.
+\end{enumerate}
 
 \end{proof}
 
