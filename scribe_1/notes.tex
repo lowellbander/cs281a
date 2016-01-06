@@ -33,14 +33,14 @@ As can be seen in Figure~\ref{fig:tm}, a TM consists of arbitrarily many tapes w
 
 The entities floating about the tapes in Figure~\ref{fig:tm} are \emph{tape heads}, all of which (except for the head of the input tape, which can only read) are capable of reading values from and writing values to the segment of the tape which they are pointing to at a given point in time. Additionally, all tape heads can either move to the left, move to the right, or stay put at each step in the computation performed by the TM.
 
-Lastly, a TM has a a state register which is capable of storing, at any given time, one of the finitely many states available to the TM. In Figure~\ref{fig:tm}, the state register holds the value $HALTED$, which is the state a TM enters once it has finished computation.\\
+Lastly, a TM has a state register which is capable of storing, at any given time, one of the finitely many states available to the TM. In Figure~\ref{fig:tm}, the state register holds the value $HALTED$, which is the state a TM enters once it has finished computation.\\
 
-Figure~\ref{fig:tm} and the accompanying description provides a useful visual intuition for the composition and behavior of a TM. However, it often proves useful to refer to the mathematical formalism of a TM, which is as follows. Formally, a TM is a tuple $(\Gamma, Q, \delta)$, such that $\Gamma$ is the alphabet of the TM, a finite set of symbols which has at minimum the subset $\{\Box, \rhd, 0, 1\}$, where $\Box$ is used for blank segments on the TM's tapes, and the $\rhd$ denotes the leftmost segment of a tape; $Q$ is a set of states which at minimum contains the states $START$ and $HALTED$, which are used, respectively, for the initial and final states of computation; and lastly $\delta$, the \emph{transition function} for the TM, which is used to determine what state to enter, what symbols to write to the tapes, and which direction (if any) to move each head, all based on the current state and the symbols beneath the every head of the TM. The transition function $\delta$ thus takes the following form: 
+Figure~\ref{fig:tm} and the accompanying description provide a useful visual intuition for the composition and behavior of a TM. However, it often proves useful to refer to the mathematical formalism of a TM, which is as follows. Formally, a TM is a tuple $(\Gamma, Q, \delta)$, such that $\Gamma$ is the alphabet of the TM, a finite set of symbols which has at minimum the subset $\{\Box, \rhd, 0, 1\}$, where $\Box$ is used for blank segments on the TM's tapes, and the $\rhd$ denotes the leftmost segment of a tape; $Q$ is a set of states which at minimum contains the states $START$ and $HALTED$, which are used, respectively, for the initial and final states of computation; and lastly $\delta$, the \emph{transition function} for the TM, which is used to determine what state to enter, what symbols to write to the tapes, and which direction (if any) to move each head, all based on the current state and the symbols beneath each head of the TM. The transition function $\delta$ thus takes the following form: 
 
 \begin{align}
 \delta : Q \times \Gamma^k \rightarrow Q \times \Gamma^{k-1}\times \{\leftarrow, \cdot, \rightarrow\}^k
 \end{align}
-where $k$ is the number of total tapes in the TM. The superscript for $\Gamma$ in the domain and for the set $\{\leftarrow, \cdot, \rightarrow\}$ in the codomain is $k$ because all $k$ tapes are examined when determining the behavior of the TM in the current step, and all $k$ tapes can either move or stay put in any given step. Similarly, the superscript for $\Gamma$ in the codomain of $\delta$ is $k-1$ because all tapes have new values written to the segment currently pointed to by their respective heads except for the input tape, because its head is read-only.
+where $k$ is the number of total tapes in the TM. The superscript for $\Gamma$ in the domain and for the set $\{\leftarrow, \cdot, \rightarrow\}$ in the codomain is $k$ because all $k$ tapes are examined when determining the behavior of the TM in the current step, and all $k$ tape heads can either move or stay put in any given step. Similarly, the superscript for $\Gamma$ in the codomain of $\delta$ is $k-1$ because all tapes have new values written to the cell currently pointed to by their respective heads except for the input tape, because its head is read-only.
 
 Though the semantics of the TM have been hinted at in the description above, they are included here explicitly for good measure. At the start of computation, the TM is in the $START$ state, the input tape contains the input to the TM, all heads are at the leftmost positions of their respective tapes, and all tapes contain only $\Box$, save for the leftmost cell of each tape which contains a $\rhd$. Then, during each step of computation, based on the symbols observed by the heads and on the current state, the TM will write new symbols to the cells pointed to by the tape heads (sans the input tape), and then move the tape heads according to $\delta$. Computation ultimately completes once the TM enters the $HALTED$ state.
 
@@ -75,7 +75,7 @@ Turing Machine $M$ computes $f$ in time $T(n)$ if, when started with $x \in \{0,
 
 The bars surrounding the input string denote the bit length of the string. For example, $|10101| = 5$.
 
-We now have the means with which to quantify the time-performance of the first palindrome checking TM we constructed. Namely, it completes in time $3\cdot T(n) = O(n)$. Moreover, we can combine our newly produced definition of time efficiency with some definitions of what it means to be a language to define families of languages.
+We now have the means with which to quantify the time-performance of the first palindrome checking TM we constructed. Namely, it completes in time $3\cdot T(n) = O(n)$ because it makes a total of at most 3 full passes over its tapes. Moreover, we can combine our newly produced definition of time efficiency with some definitions of what it means to be a language to define families of languages.
 
 \begin{definition}
 A language is any subset $L \subseteq \{0,1\}^*$.
@@ -114,14 +114,14 @@ For this final section, we demonstrate that our standard TM as defined in Sectio
 First, we show that a TM with an enriched alphabet can be perfectly simulated by a standard TM, although it will do so more slowly.
 
 \begin{definition}
-If $f_L : \{0,1\}^* \rightarrow \{0,1\}^*$ is computable in time $T(n)$ with alphabet $\Gamma$, then $f$ is computable in time $O(T(n)\cdot \lceil\log_2|\Gamma|\rceil)$.
+If $f_L : \{0,1\}^* \rightarrow \{0,1\}^*$ is computable in time $T(n)$ with alphabet $\Gamma$, then $f_L$ is computable in time $O(T(n)\cdot \lceil\log_2|\Gamma|\rceil)$ using the standard alphabet.
 \end{definition}
 
 Essentially, we accommodate this enriched alphabet within our restricted alphabet by encoding in binary every symbol in the enriched alphabet. For example, if the tapes of the TM with an enriched alphabet are as pictured in Figure~\ref{fig:enriched}, we can use the encoding scheme in Table~\ref{table:encoding} to generate a new set of tapes using only our restricted alphabet, as pictured in Figure~\ref{fig:encoded}. In this example, $\lceil\log_2|\Gamma|\rceil = \lceil\log_2|\{\alpha,\beta,\gamma,\delta,\epsilon\}|\rceil = \lceil\log_2 5\rceil = \lceil 2.3219\dots\rceil = 3$.
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=.3\textwidth]{enriched}
+\includegraphics[width=.2\textwidth]{enriched}
 \end{center}
 \caption{The tapes of the TM with an enriched alphabet.}
 \label{fig:enriched}
@@ -153,7 +153,7 @@ $\epsilon$ & 100\\
 \begin{proof}
 Encode each symbol of $\Gamma$ by a string in $\{0,1\}$* of $\lceil\log_2|\Gamma|\rceil$ bits.
 
-Simulating a step of the TM with the enriched alphabet using a TM with the restricted, binary alphabet is then done as follows. For each step, read $\lceil\log_2|\Gamma|\rceil$ symbols from each tape. As you do so, memorize the symbols you have read using state. This will require $k\cdot\lceil\log_2|\Gamma|\rceil$ states, because $k$ tapes will contain symbols of essentially $\lceil\log_2|\Gamma|\rceil$ in length. Then, just as in standard TM operation, use the transition function $\delta$ to determine the new state and the new symbols to write to the tapes. This will take $O(\lceil\log_2|\Gamma|\rceil)$ steps.
+Simulating a step of the TM with the enriched alphabet using a TM with the restricted, binary alphabet is then done as follows. For each step, read $\lceil\log_2|\Gamma|\rceil$ symbols from each tape. As you do so, memorize the symbols you have read using state. This will require $|Q|\cdot k\cdot\lceil\log_2|\Gamma|\rceil$ additional states, because $k$ tapes will contain symbols of essentially $\lceil\log_2|\Gamma|\rceil$ in length, and we'll need to keep track of this for every state of our original TM. Then, just as in standard TM operation, use the transition function $\delta$ to determine the new state and the new symbols to write to the tapes. This will take $O(\lceil\log_2|\Gamma|\rceil)$ steps.
 
 % UNSURE OF ADDITIONAL STATES NEEDED %
 
